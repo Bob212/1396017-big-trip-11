@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Антон Козыходжаев](https://up.htmlacademy.ru/ecmascript/11/user/1396017).
-* Наставник: `Неизвестно`.
+* Лучший Наставник: [Андрей Рыжаков](https://htmlacademy.ru/profile/id201015).
 
 ---
 
