@@ -70,11 +70,6 @@ export const createFormTemplate = (point) => {
   } = point;
 
   return `
-    <li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">1</span>
-        <time class="day__date" datetime="2019-03-18">MAR 18</time>
-      </div>
       <ul class="trip-events__list">
         <li class="trip-events__item">
           <form class="event  event--edit" action="#" method="post">
@@ -113,12 +108,12 @@ export const createFormTemplate = (point) => {
                 <label class="visually-hidden" for="event-start-time-1">
                   From
                 </label>
-                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(startDate).format('DD/MM/YY HH:MM')}">
+                <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(startDate).format(`DD/MM/YY HH:MM`)}">
                 —
                 <label class="visually-hidden" for="event-end-time-1">
                   To
                 </label>
-                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endDate).format('DD/MM/YY HH:MM')}18/03/19 13:35">
+                <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:MM`)}18/03/19 13:35">
               </div>
 
               <div class="event__field-group  event__field-group--price">
@@ -147,7 +142,7 @@ export const createFormTemplate = (point) => {
 
             <section class="event__details">
               ${AVAILABLE_OPTIONS[type.name] ?
-                `
+    `
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -158,7 +153,7 @@ export const createFormTemplate = (point) => {
                 ` : ``}
 
               ${description && (description.title || description.img.length > 0) ?
-                `
+    `
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${description.title}</p>
@@ -174,6 +169,5 @@ export const createFormTemplate = (point) => {
           </form>
         </li>
       </ul>
-    </li>
   `;
 };

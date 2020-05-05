@@ -6,7 +6,7 @@ export const createFullCostTemplate = (points) => {
     if (curr.offers && curr.offers.length > 0) {
       offersCost = curr.offers.reduce((offerAcc, offerCurrent) => {
         return offerAcc + offerCurrent.price;
-      }, 0)
+      }, 0);
     }
 
     return acc + curr.price + offersCost;

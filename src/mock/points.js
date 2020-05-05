@@ -16,7 +16,8 @@ const DefaultDescriptions = [
   `In rutrum ac purus sit amet tempus.`,
 ];
 
-const DefaultOffers = [{
+const DefaultOffers = [
+  {
     title: `Rent a car`,
     price: 200,
   }, {
@@ -31,7 +32,8 @@ const DefaultOffers = [{
   }, {
     title: `Add breakfast`,
     price: 50,
-}];
+  }
+];
 
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length);
@@ -91,7 +93,7 @@ const generateOffers = () => {
     offersArray.push(DefaultOffers[getRandomIntegerNumber(0, 5)]);
   }
 
-  return offersArray
+  return offersArray;
 };
 
 
@@ -105,7 +107,7 @@ const generatePoint = () => {
     startDate,
     endDate,
     duration,
-    price: Math.floor(Math.random()*100),
+    price: Math.floor(Math.random() * 100),
     offers: generateOffers(),
     isFavourite: Math.random() > 0.5,
   };
