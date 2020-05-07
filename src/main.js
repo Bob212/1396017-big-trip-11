@@ -3,6 +3,7 @@ import FormTemplate from './components/point-edit.js';
 import FullCostTemplate from './components/full-cost.js';
 import SiteMenuTemplate from './components/menu.js';
 import PointTemplate from './components/point.js';
+import NoPointsTemplate from './components/no-points.js';
 import SortTemplate from './components/sort.js';
 import TripInfoWrapper from './components/trip-info-wrapper.js';
 import TripInfoTemplate from './components/trip-info.js';
@@ -41,6 +42,15 @@ const renderPoint = (containerElement, point) => {
     containerElement.replaceChild(pointElement.getElement(), pointEditElement.getElement());
   };
 
+  const onEscDown = (evt) => {
+    const isKeyEsc = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isKeyEsc) {
+      replaceEditPointElement();
+      document.removeEventListener(`keydown`, onEscDown);
+    }
+  };
+
   const pointElement = new PointTemplate(point);
   const pointEditElement = new FormTemplate(point);
 
@@ -48,6 +58,7 @@ const renderPoint = (containerElement, point) => {
   const pointOpenButton = pointElement.getElement().querySelector(`.event__rollup-btn`);
   pointOpenButton.addEventListener(`click`, () => {
     replacePointElement()
+    document.addEventListener(`keydown`, onEscDown);
   });
 
   // event for closing button
@@ -60,6 +71,11 @@ const renderPoint = (containerElement, point) => {
 };
 
 const renderBoard = (parentComponent, points) => {
+  if (points.length < 1) {
+    render(parentComponent, new NoPointsTemplate().getElement());
+    return;
+  }
+
   // render sort template
   render(parentComponent, new SortTemplate().getElement());
 
