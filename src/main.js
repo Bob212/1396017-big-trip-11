@@ -1,13 +1,15 @@
-import { createFilterTemplate } from './components/filter.js'
-import { createFormTemplate } from './components/point-edit.js'
-import { createFullCostTemplate } from './components/full-cost.js'
-import { createSiteMenuTemplate } from './components/menu.js'
-import { createPointTemplate } from './components/point.js'
-import { createSortTemplate } from './components/sort.js'
-import { createTripInfoWrapperTemplate } from './components/trip-info-wrapper.js'
-import { createTripInfoTemplate } from './components/trip-info.js'
-import { createDaysTemplate } from './components/create-days.js'
-import { generatePoints } from './mock/points.js'
+import FilterTemplate from './components/filter.js';
+import FormTemplate from './components/point-edit.js';
+import FullCostTemplate from './components/full-cost.js';
+import SiteMenuTemplate from './components/menu.js';
+import PointTemplate from './components/point.js';
+import SortTemplate from './components/sort.js';
+import TripInfoWrapper from './components/trip-info-wrapper.js';
+import TripInfoTemplate from './components/trip-info.js';
+import DaysTemplate from './components/create-days.js';
+
+import { generatePoints } from './mock/points.js';
+import { render, RenderPosition } from './utils.js';
 
 const POINTS_COUNT = 12;
 
@@ -17,40 +19,67 @@ points = points.sort((a, b) => {
 	return a.startDate - b.startDate;
 });
 
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = document.querySelector(`.trip-controls`);
 const tripSortElement = document.querySelector(`.trip-events`);
 
-render(tripMainElement, createTripInfoWrapperTemplate(), `afterbegin`);
+render(tripMainElement, new TripInfoWrapper().getElement(), RenderPosition.AFTERBEGIN);
 const tripMainWrapperElement = document.querySelector(`.trip-main__trip-info.trip-info`);
 
-render(tripMainWrapperElement, createTripInfoTemplate(points));
-render(tripMainWrapperElement, createFullCostTemplate(points));
+render(tripMainWrapperElement, new TripInfoTemplate(points).getElement());
+render(tripMainWrapperElement, new FullCostTemplate(points).getElement());
 
-render(tripControlsElement, createSiteMenuTemplate());
-render(tripControlsElement, createFilterTemplate());
+render(tripControlsElement, new SiteMenuTemplate().getElement());
+render(tripControlsElement, new FilterTemplate().getElement());
 
-render(tripSortElement, createSortTemplate());
+const renderPoint = (containerElement, point) => {
+  const replacePointElement = () => {
+    containerElement.replaceChild(pointEditElement.getElement(), pointElement.getElement());
+  };
 
-// render just days nums
-render(tripSortElement, createDaysTemplate(points));
-const tripDaysElement = document.querySelector(`.trip-days`);
+  const replaceEditPointElement = () => {
+    containerElement.replaceChild(pointElement.getElement(), pointEditElement.getElement());
+  };
 
-// render day-edit pin
-render(tripDaysElement.querySelector(`.trip-events__list`), createFormTemplate(points[0]));
+  const pointElement = new PointTemplate(point);
+  const pointEditElement = new FormTemplate(point);
 
-// render another days pin
-let identificatorForTheDay = points[1].startDate.getDate();
+  // event for opening button
+  const pointOpenButton = pointElement.getElement().querySelector(`.event__rollup-btn`);
+  pointOpenButton.addEventListener(`click`, () => {
+    replacePointElement()
+  });
 
-for (let i = 1, j = 0; i < points.length; i++) {
-	if (points[i].startDate.getDate() !== identificatorForTheDay) {
-		identificatorForTheDay = points[i].startDate.getDate();
-		j++;
-	}
+  // event for closing button
+  const pointCloseButton = pointEditElement.getElement().querySelector(`.event__rollup-btn`);
+  pointCloseButton.addEventListener(`click`, () => {
+    replaceEditPointElement();
+  });
 
-  render(tripDaysElement.children[j].querySelector(`.trip-events__list`), createPointTemplate(points[i]));
-}
+  render(containerElement, pointElement.getElement());
+};
+
+const renderBoard = (parentComponent, points) => {
+  // render sort template
+  render(parentComponent, new SortTemplate().getElement());
+
+  // render just days nums
+  render(parentComponent, new DaysTemplate(points).getElement());
+  const tripDaysElement = document.querySelector(`.trip-days`);
+
+  // render points
+  let identificatorForTheDay = points[0].startDate.getDate();
+  let currentDayNum = 0;
+
+  points.slice(0).forEach((point) => {
+    if (point.startDate.getDate() !== identificatorForTheDay) {
+      identificatorForTheDay = point.startDate.getDate();
+      currentDayNum++;
+    }
+
+    const containerForPoint = tripDaysElement.children[currentDayNum].querySelector(`.trip-events__list`);
+    renderPoint(containerForPoint, point);
+  });
+};
+
+renderBoard(tripSortElement, points);

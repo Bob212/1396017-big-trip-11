@@ -1,3 +1,4 @@
+import {createElement} from '../utils.js';
 import moment from 'moment';
 
 const createOneDay = (date, index) => {
@@ -14,7 +15,7 @@ const createOneDay = (date, index) => {
   `;
 };
 
-export const createDaysTemplate = (points) => {
+const createDaysTemplate = (points) => {
   let dates = new Set();
 
   points.forEach((point) => {
@@ -33,3 +34,26 @@ export const createDaysTemplate = (points) => {
     </ul>
   `;
 };
+
+export default class DaysTemplate {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDaysTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,4 +1,4 @@
-import {formatDate, typeWithPretext} from '../utils.js';
+import {createElement, formatDate, typeWithPretext} from '../utils.js';
 
 const createOffersTemplate = (offers) => {
   return offers.map((offer) => {
@@ -12,7 +12,7 @@ const createOffersTemplate = (offers) => {
   }).join(`\n`);
 };
 
-export const createPointTemplate = (point) => {
+const createPointTemplate = (point) => {
   const {
     type,
     destination,
@@ -58,3 +58,26 @@ export const createPointTemplate = (point) => {
     </li>
   `;
 };
+
+export default class PointTemplate {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

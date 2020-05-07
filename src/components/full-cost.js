@@ -1,4 +1,6 @@
-export const createFullCostTemplate = (points) => {
+import {createElement} from '../utils.js';
+
+const createFullCostTemplate = (points) => {
   const allPointsCost = points.reduce((acc, curr) => {
     let offersCost = 0;
 
@@ -18,3 +20,26 @@ export const createFullCostTemplate = (points) => {
     </p>
   `;
 };
+
+export default class FullCostTemplate {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFullCostTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
