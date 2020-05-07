@@ -1,6 +1,7 @@
 import moment from 'moment';
+import {createElement} from '../utils.js';
 
-export const createTripInfoTemplate = (points) => {
+const createTripInfoTemplate = (points) => {
   const transferPoints = points.filter((point) => {
     return point.type.type === `transfer`;
   });
@@ -18,3 +19,26 @@ export const createTripInfoTemplate = (points) => {
     </div>
   `;
 };
+
+export default class TripInfoTemplate {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
