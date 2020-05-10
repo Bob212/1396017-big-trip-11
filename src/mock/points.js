@@ -68,8 +68,11 @@ const generateDesctiption = () => {
 };
 
 const generateStartAndEndDates = () => {
+  const hoursOffset = getRandomIntegerNumber(0, 10);
   const startDate = new Date();
+  startDate.setHours(new Date().getHours() + hoursOffset);
   const endDate = new Date();
+  endDate.setHours(new Date().getHours() + hoursOffset);
   const dateOffset = getRandomIntegerNumber(0, 4);
 
   startDate.setDate(startDate.getDate() + dateOffset);
