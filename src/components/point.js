@@ -1,4 +1,5 @@
-import {createElement, formatDate, typeWithPretext} from '../utils.js';
+import AbstractComponent from "./abstract-component.js";
+import {formatDate, typeWithPretext} from '../utils/common.js';
 
 const createOffersTemplate = (offers) => {
   return offers.map((offer) => {
@@ -59,25 +60,19 @@ const createPointTemplate = (point) => {
   `;
 };
 
-export default class PointTemplate {
+export default class PointTemplate extends AbstractComponent {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
+  setOpenButtonClickHandler(handler) {
+    const button = this.getElement().querySelector(`.event__rollup-btn`);
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    button.addEventListener(`click`, handler);
   }
 }

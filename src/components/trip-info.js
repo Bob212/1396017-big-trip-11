@@ -1,5 +1,5 @@
+import AbstractComponent from "./abstract-component.js";
 import moment from 'moment';
-import {createElement} from '../utils.js';
 
 const createTripInfoTemplate = (points) => {
   const transferPoints = points.filter((point) => {
@@ -20,25 +20,13 @@ const createTripInfoTemplate = (points) => {
   `;
 };
 
-export default class TripInfoTemplate {
+export default class TripInfoTemplate extends AbstractComponent {
   constructor(points) {
+    super();
     this._points = points;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

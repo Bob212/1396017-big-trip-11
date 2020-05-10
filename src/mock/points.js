@@ -1,4 +1,4 @@
-import {formatMinutes} from '../utils.js';
+import {formatMinutes} from '../utils/common.js';
 import {POINT_TYPES, DESTINATION_LIST} from '../const.js';
 
 

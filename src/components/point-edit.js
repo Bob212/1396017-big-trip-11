@@ -1,5 +1,6 @@
+import AbstractComponent from "./abstract-component.js";
 import {POINT_TYPES, DESTINATION_LIST, AVAILABLE_OPTIONS} from '../const.js';
-import {createElement, typeWithPretext} from '../utils.js';
+import {typeWithPretext} from '../utils/common.js';
 import moment from 'moment';
 
 const transferTypes = POINT_TYPES.filter((type) => type.type === `transfer`);
@@ -170,25 +171,19 @@ const createFormTemplate = (point) => {
   `;
 };
 
-export default class FormTemplate {
+export default class FormTemplate extends AbstractComponent {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createFormTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
+  setCloseButtonClickHandler(handler) {
+    const button = this.getElement().querySelector(`.event__rollup-btn`);
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    button.addEventListener(`click`, handler);
   }
 }
