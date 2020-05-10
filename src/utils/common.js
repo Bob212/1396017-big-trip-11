@@ -9,7 +9,7 @@ export const formatMinutes = (minutes) => {
   h = h ? `${h}h ` : ``;
   m = m === `00` ? `` : `${m}m`;
 
-  return `${h}${m}`
+  return `${h}${m}`;
 };
 
 export const formatDate = (date) => {
@@ -28,27 +28,4 @@ export const typeWithPretext = (type) => {
     return `${firstLetterToUpperCase(type.name)} to`;
   }
   return `${firstLetterToUpperCase(type.name)} in`;
-};
-
-export const createElement = (template) => {
-  const divElement = document.createElement(`div`);
-  divElement.innerHTML = template;
-
-  return divElement.children[0];
-};
-
-export const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
-
-export const render = (container, element, place = `beforeend`) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
 };

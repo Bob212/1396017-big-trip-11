@@ -1,16 +1,13 @@
 import FilterTemplate from './components/filter.js';
-import FormTemplate from './components/point-edit.js';
 import FullCostTemplate from './components/full-cost.js';
 import SiteMenuTemplate from './components/menu.js';
-import PointTemplate from './components/point.js';
-import NoPointsTemplate from './components/no-points.js';
-import SortTemplate from './components/sort.js';
 import TripInfoWrapper from './components/trip-info-wrapper.js';
 import TripInfoTemplate from './components/trip-info.js';
-import DaysTemplate from './components/create-days.js';
+
+import TripController from './controllers/trip.js';
 
 import { generatePoints } from './mock/points.js';
-import { render, RenderPosition } from './utils.js';
+import { render, RenderPosition } from './utils/render.js';
 
 const POINTS_COUNT = 12;
 
@@ -22,80 +19,17 @@ points = points.sort((a, b) => {
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = document.querySelector(`.trip-controls`);
-const tripSortElement = document.querySelector(`.trip-events`);
 
-render(tripMainElement, new TripInfoWrapper().getElement(), RenderPosition.AFTERBEGIN);
+render(tripMainElement, new TripInfoWrapper(), RenderPosition.AFTERBEGIN);
 const tripMainWrapperElement = document.querySelector(`.trip-main__trip-info.trip-info`);
 
-render(tripMainWrapperElement, new TripInfoTemplate(points).getElement());
-render(tripMainWrapperElement, new FullCostTemplate(points).getElement());
+render(tripMainWrapperElement, new TripInfoTemplate(points));
+render(tripMainWrapperElement, new FullCostTemplate(points));
 
-render(tripControlsElement, new SiteMenuTemplate().getElement());
-render(tripControlsElement, new FilterTemplate().getElement());
+render(tripControlsElement, new SiteMenuTemplate());
+render(tripControlsElement, new FilterTemplate());
 
-const renderPoint = (containerElement, point) => {
-  const replacePointElement = () => {
-    containerElement.replaceChild(pointEditElement.getElement(), pointElement.getElement());
-  };
-
-  const replaceEditPointElement = () => {
-    containerElement.replaceChild(pointElement.getElement(), pointEditElement.getElement());
-  };
-
-  const onEscDown = (evt) => {
-    const isKeyEsc = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isKeyEsc) {
-      replaceEditPointElement();
-      document.removeEventListener(`keydown`, onEscDown);
-    }
-  };
-
-  const pointElement = new PointTemplate(point);
-  const pointEditElement = new FormTemplate(point);
-
-  // event for opening button
-  const pointOpenButton = pointElement.getElement().querySelector(`.event__rollup-btn`);
-  pointOpenButton.addEventListener(`click`, () => {
-    replacePointElement()
-    document.addEventListener(`keydown`, onEscDown);
-  });
-
-  // event for closing button
-  const pointCloseButton = pointEditElement.getElement().querySelector(`.event__rollup-btn`);
-  pointCloseButton.addEventListener(`click`, () => {
-    replaceEditPointElement();
-  });
-
-  render(containerElement, pointElement.getElement());
-};
-
-const renderBoard = (parentComponent, points) => {
-  if (points.length < 1) {
-    render(parentComponent, new NoPointsTemplate().getElement());
-    return;
-  }
-
-  // render sort template
-  render(parentComponent, new SortTemplate().getElement());
-
-  // render just days nums
-  render(parentComponent, new DaysTemplate(points).getElement());
-  const tripDaysElement = document.querySelector(`.trip-days`);
-
-  // render points
-  let identificatorForTheDay = points[0].startDate.getDate();
-  let currentDayNum = 0;
-
-  points.slice(0).forEach((point) => {
-    if (point.startDate.getDate() !== identificatorForTheDay) {
-      identificatorForTheDay = point.startDate.getDate();
-      currentDayNum++;
-    }
-
-    const containerForPoint = tripDaysElement.children[currentDayNum].querySelector(`.trip-events__list`);
-    renderPoint(containerForPoint, point);
-  });
-};
-
-renderBoard(tripSortElement, points);
+// rendering main section
+const mainSectionElement = document.querySelector(`.trip-events`);
+const tripController = new TripController(mainSectionElement);
+tripController.render(points);
