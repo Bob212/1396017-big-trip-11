@@ -1,15 +1,11 @@
+import moment from 'moment';
+
 const castTimeFormat = (number) => {
   return number < 10 ? `0${number}` : String(number);
 };
 
 export const formatMinutes = (minutes) => {
-  let m = castTimeFormat(minutes % 60);
-  let h = (minutes - m) / 60;
-
-  h = h ? `${h}h ` : ``;
-  m = m === `00` ? `` : `${m}m`;
-
-  return `${h}${m}`;
+  return moment.utc(moment.duration(minutes, `minutes`).asMilliseconds()).format(`HH:mm`);
 };
 
 export const formatDate = (date) => {

@@ -3,6 +3,8 @@ import {POINT_TYPES, DESTINATION_LIST, AVAILABLE_OPTIONS} from '../const.js';
 import {typeWithPretext} from '../utils/common.js';
 import {generateDesctiption} from '../utils/generators.js';
 import moment from 'moment';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 const transferTypes = POINT_TYPES.filter((type) => type.type === `transfer`);
 const activityTypes = POINT_TYPES.filter((type) => type.type === `activity`);
@@ -61,14 +63,9 @@ const createPhotos = (srcArray) => {
 
 const createFormTemplate = (point, options = {}) => {
   const {
-    // type = POINT_TYPES[0],
-    // destination = ``,
     startDate = new Date(),
     endDate = new Date(),
     price = ``,
-    // offers = ``,
-    // isFavorite = false,
-    // description = false,
   } = point;
 
   const {
@@ -122,7 +119,7 @@ const createFormTemplate = (point, options = {}) => {
               <label class="visually-hidden" for="event-end-time-1">
                 To
               </label>
-              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:MM`)}18/03/19 13:35">
+              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endDate).format(`DD/MM/YY HH:MM`)}">
             </div>
 
             <div class="event__field-group  event__field-group--price">
@@ -189,10 +186,13 @@ export default class FormTemplate extends AbstractSmartComponent {
     this._isFavorite = point.isFavorite || false;
     this._description = point.description || false;
     this._offers = point.offers || [];
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
 
     this._closeHandler = null;
     this._addFavoritesHandler = null;
 
+    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
@@ -215,6 +215,8 @@ export default class FormTemplate extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+
+    this._applyFlatpickr();
   }
 
   setCloseButtonClickHandler(handler) {
@@ -242,6 +244,29 @@ export default class FormTemplate extends AbstractSmartComponent {
     this._offers = point.offers;
 
     this.rerender();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrEnd.destroy();
+
+      this._flatpickrStart = null;
+      this._flatpickrEnd = null;
+    }
+
+    const defaultOptionsForInputs = {
+      altInput: true,
+      allowInput: true,
+      defaultDate: `today`,
+      altFormat: `d/m/Y H:i`,
+    };
+
+    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
+    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
+
+    this._flatpickrStart = flatpickr(dateStartElement, Object.assign(defaultOptionsForInputs, {defaultDate: this._point.startDate}));
+    this._flatpickrEnd = flatpickr(dateEndElement, Object.assign(defaultOptionsForInputs, {defaultDate: this._point.endDate}));
   }
 
   _subscribeOnEvents() {
