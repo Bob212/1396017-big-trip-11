@@ -1,19 +1,20 @@
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
 import {POINT_TYPES, DESTINATION_LIST, AVAILABLE_OPTIONS} from '../const.js';
 import {typeWithPretext} from '../utils/common.js';
+import {generateDesctiption} from '../utils/generators.js';
 import moment from 'moment';
 
 const transferTypes = POINT_TYPES.filter((type) => type.type === `transfer`);
 const activityTypes = POINT_TYPES.filter((type) => type.type === `activity`);
 
 const createTypesTemplate = (types) => {
-  return types.map((type) => {
+  return types.map((type, index) => {
     const {name} = type;
 
     return `
       <div class="event__type-item">
-        <input id="event-type-${name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${name}">
-        <label class="event__type-label  event__type-label--${name}" for="event-type-${name}-1">${name}</label>
+        <input id="event-type-${name}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${name}">
+        <label class="event__type-label  event__type-label--${name}" for="event-type-${name}-${index}">${name}</label>
       </div>
     `;
   }).join(`\n`);
@@ -58,17 +59,25 @@ const createPhotos = (srcArray) => {
   }).join(`\n`);
 };
 
-const createFormTemplate = (point) => {
+const createFormTemplate = (point, options = {}) => {
   const {
-    type = POINT_TYPES[0],
-    destination = ``,
+    // type = POINT_TYPES[0],
+    // destination = ``,
     startDate = new Date(),
     endDate = new Date(),
     price = ``,
-    offers = ``,
-    isFavourite = false,
-    description = false,
+    // offers = ``,
+    // isFavorite = false,
+    // description = false,
   } = point;
+
+  const {
+    isFavorite,
+    type,
+    destination,
+    description,
+    offers,
+  } = options;
 
   return `
       <li class="trip-events__item">
@@ -127,7 +136,7 @@ const createFormTemplate = (point) => {
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
             <button class="event__reset-btn" type="reset">Delete</button>
 
-            <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavourite ? `checked` : ``}>
+            <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
             <label class="event__favorite-btn" for="event-favorite-1">
               <span class="visually-hidden">Add to favorite</span>
               <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -171,19 +180,91 @@ const createFormTemplate = (point) => {
   `;
 };
 
-export default class FormTemplate extends AbstractComponent {
+export default class FormTemplate extends AbstractSmartComponent {
   constructor(point) {
     super();
     this._point = point;
+    this._type = point.type || POINT_TYPES[0];
+    this._destination = point.destination || ``;
+    this._isFavorite = point.isFavorite || false;
+    this._description = point.description || false;
+    this._offers = point.offers || [];
+
+    this._closeHandler = null;
+    this._addFavoritesHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createFormTemplate(this._point);
+    return createFormTemplate(this._point, {
+      type: this._type,
+      destination: this._destination,
+      isFavorite: this._isFavorite,
+      description: this._description,
+      offers: this._offers,
+    });
+  }
+
+  recoveryListeners() {
+    this.setCloseButtonClickHandler(this._closeHandler);
+    this.setFavoritesButtonHandler(this._addFavoritesHandler);
+
+    this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
   }
 
   setCloseButtonClickHandler(handler) {
     const button = this.getElement().querySelector(`.event__rollup-btn`);
 
     button.addEventListener(`click`, handler);
+
+    this._closeHandler = handler;
+  }
+
+  setFavoritesButtonHandler(handler) {
+    const button = this.getElement().querySelector(`.event__favorite-btn`);
+
+    button.addEventListener(`click`, handler);
+
+    this._addFavoritesHandler = handler;
+  }
+
+  reset() {
+    const point = this._point;
+    this._type = point.type;
+    this._destination = point.destination;
+    this._isFavorite = point.isFavorite;
+    this._description = point.description;
+    this._offers = point.offers;
+
+    this.rerender();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__type-list`)
+      .addEventListener(`click`, (evt) => {
+        if (evt.target.tagName !== `INPUT`) {
+          return;
+        }
+
+        this._type = POINT_TYPES.find((el) => el.name === evt.target.value);
+        this._offers = [];
+
+        this.rerender();
+      });
+
+    element.querySelector(`.event__input--destination`)
+      .addEventListener(`change`, (evt) => {
+        this._destination = evt.target.value;
+        this._description = generateDesctiption();
+
+        this.rerender();
+      });
   }
 }
